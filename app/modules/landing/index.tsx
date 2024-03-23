@@ -1,5 +1,4 @@
-import { useRouter } from "next/navigation";
-import { redirect } from "next/navigation";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import LeadComponent from "@/components/ui/lead";
 import { booksMock } from "@/mock";
 
 export default function LandingModule() {
+
   return (
     <div>
       <div className="mb-20">
@@ -26,7 +26,7 @@ export default function LandingModule() {
             </LeadComponent>
           </div>
           <div>
-            <Link className="flex flex-col" href="/login">
+            <Link className="flex flex-col" href="/register">
               <Button>Register now</Button>
             </Link>
           </div>
@@ -38,7 +38,7 @@ export default function LandingModule() {
           {booksMock.map((book) => (
             <Card className="mx-1" key={book.id}>
               <CardHeader>
-                <img src={book.cover_img} />
+                <img src={book.cover_img} alt="book cover" />
               </CardHeader>
               <CardContent className="w-fi">
                 <p className="text-xs mb-2">{book.title}</p>

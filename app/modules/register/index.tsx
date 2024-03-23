@@ -10,14 +10,14 @@ import {
 } from "@/components/ui/form";
 import H3Component from "@/components/ui/h3";
 import { Input } from "@/components/ui/input";
-import { loginUser } from "@/services/user.service";
+import { registerUser } from "@/services/user.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import useSWRMutation from "swr/mutation";
-import { useLocalStorage } from "usehooks-ts";
 import { z } from "zod";
 
 const formSchema = z
@@ -27,9 +27,9 @@ const formSchema = z
   })
   .required();
 
-export default function LoginModule() {
-  const [login, storeLogin] = useLocalStorage("login", false);
-  const [userId, storeUserId] = useLocalStorage("userId", 0);
+export default function RegisterModule() {
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,34 +39,30 @@ export default function LoginModule() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    triggerLogin({ username: values.username, password: values.password });
+    triggerRegister({ username: values.username, password: values.password });
   }
 
-  const { trigger: triggerLogin, isMutating: isLoginMutating } = useSWRMutation(
-    "/user/login",
-    loginUser,
-    {
+  const { trigger: triggerRegister, isMutating: isRegisterMutating } =
+    useSWRMutation("/user/register", registerUser, {
       onError: (err) => {
         toast.error(err.message, {
           duration: 1500,
         });
       },
-      onSuccess: (data) => {
-        storeLogin(true);
-        storeUserId(data.data!.id);
-        toast.success("Logged in!", {
+      onSuccess: () => {
+        toast.success("Registered!", {
           duration: 1500,
         });
+        router.push('/login')
       },
-    }
-  );
+    });
   return (
     <div>
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col p-6 space-y-1">
-          <H3Component>Login</H3Component>
+          <H3Component>Register</H3Component>
           <p className="text-sm text-muted-foreground">
-            Enter your username and password to login
+            Enter your username and password to register
           </p>
         </div>
         <Form {...form}>
@@ -101,8 +97,8 @@ export default function LoginModule() {
               )}
             />
             <div className="grid">
-              <Button disabled={isLoginMutating} type="submit">
-                {isLoginMutating ? (
+              <Button disabled={isRegisterMutating} type="submit">
+                {isRegisterMutating ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
                 Submit
