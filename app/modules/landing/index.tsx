@@ -1,11 +1,13 @@
+import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import H1Component from "@/components/ui/h1";
 import H2Component from "@/components/ui/h2";
@@ -23,8 +25,10 @@ export default function LandingModule() {
               New user got 100 points free
             </LeadComponent>
           </div>
-          <div className="flex flex-col">
-            <Button>Register now</Button>
+          <div>
+            <Link className="flex flex-col" href="/login">
+              <Button>Register now</Button>
+            </Link>
           </div>
         </div>
       </div>
