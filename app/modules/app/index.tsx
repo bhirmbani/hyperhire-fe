@@ -9,12 +9,18 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { GetBookResponse, getBooks } from "@/services/app.service";
-import { getUserPoint } from "@/services/user.service";
+import {
+  GetBookResponse,
+  addBookToCart,
+  getBooks,
+} from "@/services/app.service";
+import { getUserCart, getUserPoint } from "@/services/user.service";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
+import useSWRMutation from "swr/mutation";
+import { toast } from "sonner";
 
 export default function AppModule() {
   const router = useRouter();
@@ -42,6 +48,11 @@ export default function AppModule() {
     () => getUserPoint(`${userId}`)
   );
 
+  const { data: userCart, isLoading: isGetUserCartLoading, mutate: mutateUserCart } = useSWR(
+    "getUserCart",
+    () => getUserCart(`${userId}`)
+  );
+
   const nextPage = () => {
     const newTake = parseInt(`${take}`) + 12;
     setTake(`${newTake}`);
@@ -57,6 +68,21 @@ export default function AppModule() {
     setBooks(booksData?.data);
   }, [booksData]);
 
+  const { trigger: triggerAddToCart, isMutating: isAddToCartMutating } =
+    useSWRMutation("/cart/book", addBookToCart, {
+      onError: (err) => {
+        toast.error(err.message, {
+          duration: 1500,
+        });
+      },
+      onSuccess: (data) => {
+        mutateUserCart()
+        toast.success("Book added to cart", {
+          duration: 1500,
+        });
+      },
+    });
+
   return (
     <div>
       <div className="flex justify-end mb-4">
@@ -64,7 +90,7 @@ export default function AppModule() {
           <p>My point: {userPoint?.data?.point} point</p>
         </div>
         <div className="mr-2">
-          <Button size="sm">My cart</Button>
+          <Button size="sm">My cart {userCart?.data ? `(${userCart.data.length})` : ''}</Button>
         </div>
         <div className="mr-2">
           <Button size="sm">My order</Button>
@@ -109,7 +135,17 @@ export default function AppModule() {
                   </p>
                 ))}
                 <p>{book.point} point</p>
-                <Button size="sm" variant="link" className="text-start p-0">
+                <Button
+                  onClick={() =>
+                    triggerAddToCart({
+                      userId: `${userId}`,
+                      bookId: `${book.id}`,
+                    })
+                  }
+                  size="sm"
+                  variant="link"
+                  className="text-start p-0"
+                >
                   Add to cart
                 </Button>
               </CardFooter>

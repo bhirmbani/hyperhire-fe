@@ -19,6 +19,17 @@ export interface GetBookResponse {
   }[];
 }
 
+export interface AddToCartRequest {
+  userId: string;
+  bookId: string;
+}
+
+export interface AddBookToCartResponse {
+  bookId: number;
+  id: number;
+  userId: number;
+}
+
 export const getBooks = async (skip: string, take: string) => {
   const api = apiInstance.get("/books", {
     params: {
@@ -29,6 +40,26 @@ export const getBooks = async (skip: string, take: string) => {
 
   const [err, data] = await to<
     AxiosResponse<GetBookResponse[]>,
+    AxiosError<CommonErrorResponse>
+  >(api);
+
+  const dataData = data?.data;
+
+  if (err) throw new Error(err.response?.data.message);
+
+  return {
+    data: dataData,
+  };
+};
+
+export const addBookToCart = async (
+  url: string,
+  { arg }: { arg: AddToCartRequest }
+) => {
+  const api = apiInstance.post(url, arg);
+
+  const [err, data] = await to<
+    AxiosResponse<AddBookToCartResponse>,
     AxiosError<CommonErrorResponse>
   >(api);
 

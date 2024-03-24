@@ -14,6 +14,18 @@ export interface RegisterUserResponse {
   username: string;
 }
 
+export interface GetUserCartResponse {
+  id: number;
+  userId: number;
+  bookId: number;
+  Book: {
+    id: number;
+    title: string;
+    cover_img: string;
+    point: number;
+  };
+}
+
 export const registerUser = async (
   url: string,
   { arg }: { arg: RegisterUserRequest }
@@ -59,6 +71,23 @@ export const getUserPoint = async (userId: string) => {
 
   const [err, data] = await to<
     AxiosResponse<{ point: number }>,
+    AxiosError<CommonErrorResponse>
+  >(api);
+
+  const dataData = data?.data;
+
+  if (err) throw new Error(err.response?.data.message);
+
+  return {
+    data: dataData,
+  };
+};
+
+export const getUserCart = async (userId: string) => {
+  const api = apiInstance.get(`/cart/user/${userId}`);
+
+  const [err, data] = await to<
+    AxiosResponse<GetUserCartResponse[]>,
     AxiosError<CommonErrorResponse>
   >(api);
 
