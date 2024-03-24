@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { loginUser } from "@/services/user.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -30,6 +31,7 @@ const formSchema = z
 export default function LoginModule() {
   const [login, storeLogin] = useLocalStorage("login", false);
   const [userId, storeUserId] = useLocalStorage("userId", 0);
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,6 +59,7 @@ export default function LoginModule() {
         toast.success("Logged in!", {
           duration: 1500,
         });
+        router.replace("/app");
       },
     }
   );

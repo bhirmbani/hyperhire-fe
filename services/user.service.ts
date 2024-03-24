@@ -53,3 +53,20 @@ export const loginUser = async (
     data: dataData,
   };
 };
+
+export const getUserPoint = async (userId: string) => {
+  const api = apiInstance.get(`/user/point/${userId}`);
+
+  const [err, data] = await to<
+    AxiosResponse<{ point: number }>,
+    AxiosError<CommonErrorResponse>
+  >(api);
+
+  const dataData = data?.data;
+
+  if (err) throw new Error(err.response?.data.message);
+
+  return {
+    data: dataData,
+  };
+};
