@@ -10,7 +10,9 @@ import {
 import H3Component from "@/components/ui/h3";
 import LeadComponent from "@/components/ui/lead";
 import { removeBookFromCart } from "@/services/app.service";
+import { createOrder } from "@/services/order.service";
 import { getUserCart } from "@/services/user.service";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
@@ -18,6 +20,7 @@ import { useReadLocalStorage } from "usehooks-ts";
 
 export default function CartModule() {
   const userId = useReadLocalStorage("userId");
+  const router = useRouter();
   const {
     data: userCart,
     isLoading: isGetUserCartLoading,
@@ -44,12 +47,39 @@ export default function CartModule() {
       },
     });
 
+  const { trigger: triggerOrder, isMutating: isOrderLoading } = useSWRMutation(
+    "/order",
+    createOrder,
+    {
+      onError: (err) => {
+        toast.error(err.message, {
+          duration: 1500,
+        });
+      },
+      onSuccess: (data) => {
+        toast.success("Order created!", {
+          duration: 1500,
+        });
+        router.replace("/order");
+      },
+    }
+  );
+
   return (
     <div>
       <div className="flex justify-between mb-4">
         <H3Component>My Cart</H3Component>
-        <p>{totalPointInCart} points</p>
-        <Button size="sm">Checkout</Button>
+        {userCart?.data && userCart?.data?.length > 0 ? (
+          <>
+            <p>{totalPointInCart} points</p>
+            <Button
+              size="sm"
+              onClick={() => triggerOrder({ userId: `${userId}` })}
+            >
+              Checkout
+            </Button>
+          </>
+        ) : null}
       </div>
       <div className="grid grid-cols-3 grid-flow-row gap-2">
         {userCart?.data?.map((cart) => (
@@ -57,7 +87,7 @@ export default function CartModule() {
             <CardHeader>
               <img src={cart.Book.cover_img} alt="book cover" />
             </CardHeader>
-            <CardContent className="w-fi">
+            <CardContent className="w-fit">
               <p className="text-xs mb-2">
                 {cart.Book.id} - {cart.Book.title}
               </p>

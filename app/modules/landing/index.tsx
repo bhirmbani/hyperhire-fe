@@ -40,7 +40,7 @@ export default function LandingModule() {
               <CardHeader>
                 <img src={book.cover_img} alt="book cover" />
               </CardHeader>
-              <CardContent className="w-fi">
+              <CardContent className="w-fit">
                 <p className="text-xs mb-2">{book.title}</p>
                 {book.Tag.map((tag) => (
                   <p key={tag.id} className="text-xs">

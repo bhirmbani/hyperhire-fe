@@ -79,7 +79,7 @@ export const removeBookFromCart = async (
   const api = apiInstance.delete(`${url}/${arg.cartId}`);
 
   const [err, data] = await to<
-    AxiosResponse<any>,
+    AxiosResponse<{ id: number; userId: number; bookId: number }>,
     AxiosError<CommonErrorResponse>
   >(api);
 

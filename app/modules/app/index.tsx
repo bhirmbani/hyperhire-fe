@@ -96,7 +96,9 @@ export default function AppModule() {
           </Button>
         </div>
         <div className="mr-2">
-          <Button size="sm">My order</Button>
+          <Button onClick={() => router.push("/order")} size="sm">
+            My order
+          </Button>
         </div>
         {login === true ? (
           <div>
@@ -121,7 +123,7 @@ export default function AppModule() {
               <CardHeader>
                 <img src={book.cover_img} alt="book cover" />
               </CardHeader>
-              <CardContent className="w-fi">
+              <CardContent className="w-fit">
                 <p className="text-xs mb-2">
                   {book.id} - {book.title}
                 </p>
