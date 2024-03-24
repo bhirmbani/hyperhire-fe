@@ -48,10 +48,11 @@ export default function AppModule() {
     () => getUserPoint(`${userId}`)
   );
 
-  const { data: userCart, isLoading: isGetUserCartLoading, mutate: mutateUserCart } = useSWR(
-    "getUserCart",
-    () => getUserCart(`${userId}`)
-  );
+  const {
+    data: userCart,
+    isLoading: isGetUserCartLoading,
+    mutate: mutateUserCart,
+  } = useSWR("getUserCart", () => getUserCart(`${userId}`));
 
   const nextPage = () => {
     const newTake = parseInt(`${take}`) + 12;
@@ -76,7 +77,7 @@ export default function AppModule() {
         });
       },
       onSuccess: (data) => {
-        mutateUserCart()
+        mutateUserCart();
         toast.success("Book added to cart", {
           duration: 1500,
         });
@@ -90,7 +91,9 @@ export default function AppModule() {
           <p>My point: {userPoint?.data?.point} point</p>
         </div>
         <div className="mr-2">
-          <Button size="sm">My cart {userCart?.data ? `(${userCart.data.length})` : ''}</Button>
+          <Button onClick={() => router.push("/cart")} size="sm">
+            My cart {userCart?.data ? `(${userCart.data.length})` : ""}
+          </Button>
         </div>
         <div className="mr-2">
           <Button size="sm">My order</Button>

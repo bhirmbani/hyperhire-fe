@@ -71,3 +71,23 @@ export const addBookToCart = async (
     data: dataData,
   };
 };
+
+export const removeBookFromCart = async (
+  url: string,
+  { arg }: { arg: { cartId: string } }
+) => {
+  const api = apiInstance.delete(`${url}/${arg.cartId}`);
+
+  const [err, data] = await to<
+    AxiosResponse<any>,
+    AxiosError<CommonErrorResponse>
+  >(api);
+
+  const dataData = data?.data;
+
+  if (err) throw new Error(err.response?.data.message);
+
+  return {
+    data: dataData,
+  };
+};
