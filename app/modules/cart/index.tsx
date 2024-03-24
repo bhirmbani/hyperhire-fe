@@ -12,6 +12,7 @@ import LeadComponent from "@/components/ui/lead";
 import { removeBookFromCart } from "@/services/app.service";
 import { createOrder } from "@/services/order.service";
 import { getUserCart } from "@/services/user.service";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import useSWR from "swr";
@@ -74,9 +75,14 @@ export default function CartModule() {
             <p>{totalPointInCart} points</p>
             <Button
               size="sm"
+              disabled={isOrderLoading}
               onClick={() => triggerOrder({ userId: `${userId}` })}
             >
-              Checkout
+              {isOrderLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Checkout"
+              )}
             </Button>
           </>
         ) : null}
@@ -95,10 +101,13 @@ export default function CartModule() {
             <CardFooter className="flex flex-col items-start">
               <p>{cart.Book.point} point</p>
               <Button
-                onClick={() => triggerRemove({ cartId: `${cart.id}` })}
+                onClick={() => {
+                  triggerRemove({ cartId: `${cart.id}` });
+                }}
                 size="sm"
                 variant="link"
                 className="text-start p-0 text-red-500"
+                disabled={isRemoveLoading}
               >
                 Remove
               </Button>

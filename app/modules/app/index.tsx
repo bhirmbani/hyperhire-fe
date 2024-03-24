@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
 import useSWRMutation from "swr/mutation";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function AppModule() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function AppModule() {
 
   const [skip, setSkip] = useState(params["skip"] ?? "0");
   const [take, setTake] = useState(params["take"] ?? "12");
+  const [pickedBook, setPickedBook] = useState<number>();
 
   const [books, setBooks] = useState<GetBookResponse[]>();
 
@@ -141,17 +143,21 @@ export default function AppModule() {
                 ))}
                 <p>{book.point} point</p>
                 <Button
-                  onClick={() =>
+                  onClick={() =>{
+                    setPickedBook(book.id)
                     triggerAddToCart({
                       userId: `${userId}`,
                       bookId: `${book.id}`,
-                    })
+                    })}
                   }
                   size="sm"
                   variant="link"
                   className="text-start p-0"
+                  disabled={isAddToCartMutating}
                 >
-                  Add to cart
+                  {isAddToCartMutating && pickedBook === book.id ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : 'Add to cart'}
                 </Button>
               </CardFooter>
             </Card>

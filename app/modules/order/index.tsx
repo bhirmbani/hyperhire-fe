@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cancelOrder, getUserOrder, payOrder } from "@/services/order.service";
 import { getUserPoint } from "@/services/user.service";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
@@ -11,6 +13,7 @@ import { useReadLocalStorage } from "usehooks-ts";
 
 export default function OrderModule() {
   const userId = useReadLocalStorage("userId");
+  const [pickedOrder, setPickedOrder] = useState<number>();
 
   const {
     data: userPoint,
@@ -87,24 +90,36 @@ export default function OrderModule() {
             {order.status === "UNPAID" ? (
               <CardContent className="flex w-fit p-2">
                 <Button
-                  onClick={() =>
-                    triggerPay({ orderId: `${order.id}`, userId: `${userId}` })
-                  }
+                  disabled={isPayMutating || isCancelMutating}
+                  onClick={() => {
+                    setPickedOrder(order.id);
+                    triggerPay({ orderId: `${order.id}`, userId: `${userId}` });
+                  }}
                   variant="link"
                 >
-                  Pay
+                  {isPayMutating && pickedOrder === order.id ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    "Pay"
+                  )}
                 </Button>
                 <Button
-                  onClick={() =>
+                  disabled={isPayMutating || isCancelMutating}
+                  onClick={() => {
+                    setPickedOrder(order.id);
                     triggerCancel({
                       orderId: `${order.id}`,
                       userId: `${userId}`,
-                    })
-                  }
+                    });
+                  }}
                   variant="link"
                   className="text-red-500"
                 >
-                  Cancel order
+                  {isCancelMutating && pickedOrder === order.id ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    "Cancel order"
+                  )}
                 </Button>
               </CardContent>
             ) : null}
