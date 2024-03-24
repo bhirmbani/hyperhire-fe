@@ -103,7 +103,7 @@ export const payOrder = async (
   });
 
   const [err, data] = await to<
-    AxiosResponse<any>,
+    AxiosResponse<{ id: number; userId: number; status: string }>,
     AxiosError<CommonErrorResponse>
   >(api);
 
